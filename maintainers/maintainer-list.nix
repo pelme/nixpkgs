@@ -11308,6 +11308,12 @@
     githubId = 1368952;
     name = "Pedro Lara Campos";
   };
+  pelme = {
+    email = "andreas@pelme.se";
+    github = "pelme";
+    githubId = 20529;
+    nane = "Andreas Pelme";
+  };
   penguwin = {
     email = "penguwin@penguwin.eu";
     github = "penguwin";
