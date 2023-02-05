@@ -3,6 +3,7 @@
 , python3
 , openssl
 , fetchpatch
+, fetchFromGitHub
   # Many Salt modules require various Python modules to be installed,
   # passing them in this array enables Salt to find them.
 , extraInputs ? []
@@ -10,19 +11,27 @@
 
 python3.pkgs.buildPythonApplication rec {
   pname = "salt";
-  version = "3005.1";
+  version = "3006";
 
-  src = python3.pkgs.fetchPypi {
-    inherit pname version;
-    hash = "sha256-+hTF2HP4Y7UJUBIdfiOiRJUCdFSQx8SMDPBFQGz+V8E=";
+  # src = python3.pkgs.fetchPypi {
+  #   inherit pname version;
+  #   hash = "sha256-+hTF2HP4Y7UJUBIdfiOiRJUCdFSQx8SMDPBFQGz+V8E=";
+  # };
+  src = fetchFromGitHub {
+    owner = "saltstack";
+    repo = "salt";
+    rev = "64280e9298c175f8ceb7b7bbf082a419f5c620ba";
+    sha256 = "sha256-yQNtKBmzAZZwMMRV0z7nLrB5HiNJl+NYCkLSQi/zyyQ";
   };
 
   propagatedBuildInputs = with python3.pkgs; [
     distro
     jinja2
     jmespath
+    looseversion
     markupsafe
     msgpack
+    packaging
     psutil
     pycryptodomex
     pyyaml
@@ -39,6 +48,9 @@ python3.pkgs.buildPythonApplication rec {
       --subst-var-by "libcrypto" "${lib.getLib openssl}/lib/libcrypto${stdenv.hostPlatform.extensions.sharedLibrary}"
     substituteInPlace requirements/base.txt \
       --replace contextvars ""
+
+    substituteInPlace requirements/zeromq.txt \
+      --replace "pyzmq>=20.0.0, <=22.0.3 ; python_version < \"3.9\" and sys_platform == 'win32'" ""
 
     # Don't require optional dependencies on Darwin, let's use
     # `extraInputs` like on any other platform
